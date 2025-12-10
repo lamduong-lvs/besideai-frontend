@@ -14,7 +14,7 @@ export const appConfig: AppConfigPublic = {
   description:
     "BesideAI - Your AI-powered productivity assistant.",
   auth: {
-    enablePasswordAuth: false, // Set to true to enable password-based authentication
+    enablePasswordAuth: true, // Password-based authentication enabled
   },
   legal: {
     address: {
