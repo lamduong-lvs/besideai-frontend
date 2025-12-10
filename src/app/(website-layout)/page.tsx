@@ -11,10 +11,14 @@ export default function WebsiteHomepage() {
     <>
       <Hero2 />
       <CTA1 />
-      <MonthlyAnnualPricing />
+      <section id="features">
+        <MonthlyAnnualPricing />
+      </section>
       <TextRevealByWord text="Join thousands of users who are already boosting their productivity with BesideAI" />
       <WithWithout />
-      <MonthlyAnnualPricing />
+      <section id="pricing">
+        <MonthlyAnnualPricing />
+      </section>
       <WebsiteFAQs />
       <CTA2 />
     </>

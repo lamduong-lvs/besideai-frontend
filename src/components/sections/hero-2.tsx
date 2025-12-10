@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import React from "react";
+import Link from "next/link";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,8 +18,8 @@ const Hero2 = () => {
             Boost productivity, automate tasks, and get instant answers.
           </p>
         </div>
-        <Button size="lg" className="mt-10">
-            Get Started
+        <Button size="lg" className="mt-10" asChild>
+            <Link href="/#pricing">Get Started</Link>
         </Button>
         <div className="mx-auto mt-10 flex w-fit flex-col items-center gap-4 sm:flex-row">
           <span className="mx-4 inline-flex items-center -space-x-4">

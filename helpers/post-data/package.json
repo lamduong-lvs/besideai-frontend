@@ -1,7 +1,0 @@
-{
-  "name": "@indiekit-test/post-data",
-  "main": "index.js",
-  "type": "module",
-  "private": true,
-  "license": "MIT"
-}

@@ -1,6 +1,0 @@
-coverage
-docs/**/*.md
-/.nx/workspace-data
-**/locales/*.json
-*.html
-CHANGELOG.md

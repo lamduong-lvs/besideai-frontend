@@ -1,7 +1,0 @@
-{
-  "name": "@indiekit-test/media-data",
-  "main": "index.js",
-  "type": "module",
-  "private": true,
-  "license": "MIT"
-}
