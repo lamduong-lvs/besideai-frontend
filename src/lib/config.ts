@@ -35,7 +35,7 @@ export const appConfig: AppConfigPublic = {
     youtube: "https://youtube.com/-",
   },
   email: {
-    senderName: "Indie Kit",
-    senderEmail: "ssent.hq@gmail.com",
+    senderName: "BesideAI",
+    senderEmail: "noreply@besideai.work",
   },
 };
