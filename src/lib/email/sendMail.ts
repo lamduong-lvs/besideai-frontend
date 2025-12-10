@@ -27,9 +27,7 @@ const sendMail = async (to: string, subject: string, html: string) => {
   if (response.error) {
     console.error("Email sent failed", response.error);
   } else {
-    if (process.env.NODE_ENV === "development") {
-      console.info("Email sent successfully", response);
-    }
+    console.info("Email sent successfully", response);
   }
 };
 
