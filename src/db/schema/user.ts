@@ -8,7 +8,7 @@ import {
   jsonb,
 } from "drizzle-orm/pg-core";
 
-import type { AdapterAccountType } from "next-auth/adapters";
+// import type { AdapterAccountType } from "next-auth/adapters"; // Tạm thời comment
 import { plans } from "./plans";
 
 import { type CreditType } from "@/lib/credits/credits";
@@ -46,7 +46,7 @@ export const accounts = pgTable(
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccountType>().notNull(),
+    type: text("type").notNull(),
     provider: text("provider").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),

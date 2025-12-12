@@ -37,27 +37,37 @@ interface ImpersonateToken {
   expiry: string;
 }
 
-const emailProvider: EmailConfig = {
-  id: "email",
-  type: "email",
-  name: "Email",
-  async sendVerificationRequest(params) {
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `Magic link for ${params.identifier}: ${params.url} expires at ${params.expires}`
-      );
-    }
-    const html = await render(
-      MagicLinkEmail({ url: params.url, expiresAt: params.expires })
-    );
+// const emailProvider: EmailConfig = {
+//   id: "email",
+//   type: "email",
+//   name: "Email",
+//   server: process.env.EMAIL_SERVER_URL ? {
+//     host: new URL(process.env.EMAIL_SERVER_URL).host,
+//     port: process.env.EMAIL_SERVER_PORT ? parseInt(process.env.EMAIL_SERVER_PORT) : undefined,
+//     auth: {
+//       user: process.env.EMAIL_SERVER_USER,
+//       pass: process.env.EMAIL_SERVER_PASSWORD,
+//     },
+//   } : undefined,
+//   from: process.env.EMAIL_FROM || appConfig.email.senderEmail,
+//   maxAge: 24 * 60 * 60, // 24 hours
+//   async sendVerificationRequest(params) {
+//     if (process.env.NODE_ENV === "development") {
+//       console.log(
+//         `Magic link for ${params.identifier}: ${params.url} expires at ${params.expires}`
+//       );
+//     }
+//     const html = await render(
+//       MagicLinkEmail({ url: params.url, expiresAt: params.expires })
+//     );
 
-    await sendMail(
-      params.identifier,
-      `Sign in to ${appConfig.projectName}`,
-      html
-    );
-  },
-};
+//     await sendMail(
+//       params.identifier,
+//       `Sign in to ${appConfig.projectName}`,
+//       html
+//     );
+//   },
+// };
 
 const adapter = DrizzleAdapter(db, {
   usersTable: users,
@@ -65,6 +75,14 @@ const adapter = DrizzleAdapter(db, {
   sessionsTable: sessions,
   verificationTokensTable: verificationTokens,
 });
+
+// Test database connection
+try {
+  await db.select().from(users).limit(1);
+  console.log("Database connection successful");
+} catch (error) {
+  console.error("Database connection failed:", error);
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -74,9 +92,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  debug: process.env.NODE_ENV === "development", // Enable debug in development
   adapter: {
     ...adapter,
-    createUser: async (user) => {
+    createUser: async (user: any) => {
       if (!adapter.createUser) {
         throw new Error("Adapter is not initialized");
       }
@@ -109,7 +128,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.impersonatedBy = user.impersonatedBy;
       }
 
-      // NOTE: Do not add anything else to the token, except for the sub
+      // NOTE: Do not add anything else to token, except for the sub
       // This avoids stale data problems, while increasing db roundtrips
       // which is acceptable while starting small.
       return {
@@ -124,11 +143,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+      wellKnown: "https://accounts.google.com/.well-known/openid-configuration",
     }),
-    emailProvider,
+    // Tạm thời comment email provider
+    // emailProvider,
     // Password-based authentication
     ...(appConfig.auth?.enablePasswordAuth
       ? [
@@ -211,7 +239,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         try {
-          // The token is already URL encoded, decryptJson handles the decoding
+          // The token is already URL encoded, decryptJson handles decoding
           const impersonationToken = await decryptJson<ImpersonateToken>(
             credentials.signedToken as string
           );
@@ -221,7 +249,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             throw new Error("Impersonation token expired");
           }
 
-          // Trust the decrypted token without additional database validations
+          // Trust: decrypted token without additional database validations
           return {
             id: impersonationToken.impersonateIntoId,
             email: impersonationToken.impersonateIntoEmail,

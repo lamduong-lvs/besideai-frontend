@@ -19,14 +19,15 @@ export function PlanBadge() {
   }
 
   const { name, codename } = currentPlan;
-
+  
   const planColors: Record<string, string> = {
     premium: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200",
     professional:
       "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200",
+    free: "bg-muted text-foreground",
   };
 
-  const color = planColors[codename] ?? "bg-muted text-foreground";
+  const color = planColors[codename || 'free'] ?? "bg-muted text-foreground";
 
   return (
     <Badge className={`gap-1 ${color}`}>
